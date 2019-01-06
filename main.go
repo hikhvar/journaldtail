@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"time"
 
 	"github.com/cortexproject/cortex/pkg/util/flagext"
 
@@ -47,6 +48,7 @@ func main() {
 }
 
 func TailLoop(reader *journald.Reader, writer *promtail.Client) error {
+	var lastTS time.Time
 	for {
 		r, err := reader.Next()
 		if err != nil {
@@ -54,7 +56,14 @@ func TailLoop(reader *journald.Reader, writer *promtail.Client) error {
 		}
 		if r != nil {
 			ls := ToLabelSet(r)
-			err = writer.Handle(ls, journald.ToGolangTime(r.RealtimeTimestamp), r.Fields[sdjournal.SD_JOURNAL_FIELD_MESSAGE])
+			ts := journald.ToGolangTime(r.RealtimeTimestamp)
+			msg := r.Fields[sdjournal.SD_JOURNAL_FIELD_MESSAGE]
+
+			if ts.Before(lastTS) {
+				log.Fatal(fmt.Sprintf("%s is before %s! Message: %s", ts, lastTS, msg))
+			}
+			lastTS = ts
+			err = writer.Handle(ls, ts, msg)
 			if err != nil {
 				return errors.Wrap(err, "could not enque systemd logentry")
 			}
