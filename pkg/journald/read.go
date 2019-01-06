@@ -71,7 +71,5 @@ func (r *Reader) advance() (bool, error) {
 }
 
 func ToGolangTime(sdTime uint64) time.Time {
-	seconds := sdTime / 1000000
-	reminderMicroseconds := sdTime % 1000000
-	return time.Unix(int64(seconds), int64(reminderMicroseconds*1000))
+	return time.Unix(0, int64(time.Duration(sdTime)*time.Microsecond))
 }
