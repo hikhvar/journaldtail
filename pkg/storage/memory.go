@@ -16,7 +16,7 @@ func (m *Memory) Save(position string) error {
 
 // Last returns the last read position or an error if not set yet.
 func (m *Memory) Last() (string, error) {
-	if m.isSet {
+	if !m.isSet {
 		return "", errors.New("not set during this program life time")
 	}
 	return m.last, nil
