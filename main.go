@@ -20,6 +20,8 @@ import (
 	"github.com/prometheus/common/model"
 )
 
+var lokiHostURL = "http://localhost:3100/api/prom/push"
+
 func main() {
 	var logger kitlog.Logger
 	logger = kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr))
@@ -31,10 +33,15 @@ func main() {
 		log.Fatal(fmt.Sprintf("could not open journal: %s", err.Error()))
 	}
 	reader := journald.NewReader(journal, &memStorage)
+
 	// TODO: Read from CLI
+	if v, isSet := os.LookupEnv("LOKI_URL"); isSet {
+		lokiHostURL = v
+	}
+
 	cfg := promtail.ClientConfig{
 		URL: flagext.URLValue{
-			URL: MustParseURL("http://localhost:3100/api/prom/push"),
+			URL: MustParseURL(lokiHostURL),
 		},
 	}
 	lokiClient, err := promtail.NewClient(cfg, logger)
