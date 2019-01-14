@@ -20,6 +20,14 @@ COPY . /root/go/src/github.com/hikhvar/journaldtail/
 
 RUN make journaldtail
 
+# I use this image with Docker Swarm, and during development run:
+#
+# docker run -ti -v /etc/machine-id:/etc/machine-id \
+#       -v /var/run/systemd/journal/:/var/run/systemd/journal/ \
+#       -v /var/log/journal:/run/log/journal \
+#       --network loki_default \
+#       -e LOKI_URL=http://loki:3100/api/prom/push \
+#           svendowideit/journaldtail
 
 FROM ubuntu:18.04
 
