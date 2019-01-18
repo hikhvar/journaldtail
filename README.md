@@ -10,6 +10,12 @@ I made this project since the promtail community is not sure if promtail will su
 
 To build this, you'll need cgo and the systemd headers installed - for example, on a Debian based system, `apt-get install libsystemd-dev`.
 
+## Journal fields
+
+When you import Journald logs to loki, you'll see a large number of log labels.
+Its worth reading the [systemd journal fields documentation](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html)
+to get a feel for what is available to you.
+
 ## ToDo
 
 - [ ] Fix logging infrastructure in code
